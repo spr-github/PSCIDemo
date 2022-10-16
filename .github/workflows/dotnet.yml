@@ -1,22 +1,30 @@
 name: .NET
 
 on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
-
+  workflow_dispatch:
+  
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    continue-on-error: true
+    
+    strategy:
+      matrix:
+        os: [windows, ubuntu-latest]
+        dot-net-version: [5.0.X]
+        include:
+          - os: ubuntu-latest
+            dot-net-version: 3.1.x
+         
+        
 
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: ${{ matrix.dot-net-version }}
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
